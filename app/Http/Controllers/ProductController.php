@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\ProductNotBelongsToUser;
 use App\Http\Requests\ProductRequest;
 use App\Http\Resources\Product\ProductCollection;
 use App\Http\Resources\Product\ProductResource;
 use App\Model\Product;
+use http\Env\Response;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ProductController extends Controller
 {
@@ -53,7 +56,7 @@ class ProductController extends Controller
 
         return response([
             'data' => new ProductResource($product)
-        ],Response::HTTP_CREATED);
+        ],201);
     }
 
     /**
@@ -88,7 +91,12 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
-        //
+        $this->ProductUserCheck($product);
+        $product->update($request->all());
+
+        return response([
+            'data' => new ProductResource($product)
+        ],\Illuminate\Http\Response::HTTP_CREATED);
     }
 
     /**
@@ -99,6 +107,15 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        //
+        $this->ProductUserCheck($product);
+       $product->delete();
+
+       return response(null,\Illuminate\Http\Response::HTTP_NO_CONTENT);
+    }
+
+    public function ProductUserCheck($product){
+        if (Auth::id() !== $product->user_id){
+            throw new ProductNotBelongsToUser;
+        }
     }
 }
