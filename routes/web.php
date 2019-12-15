@@ -15,7 +15,8 @@ Route::get('/', function () {
 	
     return view('welcome');
 });
-//Route::get('/products','ProductController@index');
+Route::get('/product','ProductController@list');
+Route::post('/product','ProductController@store');
 
 Auth::routes();
 

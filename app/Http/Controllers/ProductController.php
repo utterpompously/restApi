@@ -22,8 +22,14 @@ class ProductController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
+
     {
+
+
         return ProductCollection::collection(Product::paginate(20));
+    }
+    public function list(){
+        return view('admin.product');
     }
 
     /**
@@ -44,6 +50,7 @@ class ProductController extends Controller
      */
     public function store(ProductRequest $request)
     {
+        $user_id = Auth::User()->id;
         $product = new Product;
 
         $product->name = $request->name;
@@ -51,6 +58,7 @@ class ProductController extends Controller
         $product->price = $request->price;
         $product->stock = $request->stock;
         $product->discount = $request->discount;
+        $product->user_id = $user_id;
 
         $product->save();
 
